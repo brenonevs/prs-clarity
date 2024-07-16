@@ -1,0 +1,2 @@
+# prs-clarity
+  Clarity é um inovador assistente visual projetado para ajudar pessoas com deficiência visual a navegar com segurança e autonomia em ambientes internos e externos. Utilizando a avançada tecnologia de detecção de objetos do YOLOv8, Clarity identifica e descreve em tempo real os objetos ao redor, detectando obstáculos, reconhecendo placas e sinais, e fornecendo descrições detalhadas do ambiente. Através de um aplicativo móvel intuitivo, Clarity oferece uma experiência de navegação assistida, proporcionando maior independência e segurança para seus usuários.
