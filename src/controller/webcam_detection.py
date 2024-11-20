@@ -30,33 +30,37 @@ class WebcamDetection:
         threading.Thread(target=reset_list, daemon=True).start()
 
     def detect(self):
-
         while self.cap.isOpened():
             ret, frame = self.cap.read()
             if not ret:
                 break
 
+            # Processar detecções
             results = self.model(frame, stream=True)
-
             for result in results:
                 for box in result.boxes:
-                    x1, y1, x2, y2 = map(int, box.xyxy[0])
-                    conf = box.conf[0]
-                    cls = int(box.cls[0])
-                    label = f"{self.model.names[cls]} {conf:.2f}"
-                    self.real_time_objects.append(label)
+                    x1, y1, x2, y2 = map(int, box.xyxy[0])  # Coordenadas da bounding box
+                    conf = box.conf[0]  # Confiança da detecção
+                    cls = int(box.cls[0])  # Classe detectada
+                    label = self.model.names[cls]  # Nome do objeto detectado
+                    label_with_conf = f"{label} {conf:.2f}"
 
-                    depth = self.depth_estimator.estimate_depth_from_frame(frame)
-                    self.depth_estimator.print_depth_info(depth)
+                    # Adicionar o objeto com a profundidade à lista
+                    distance_info = f"{label_with_conf}"
+                    self.real_time_objects.append(distance_info)
 
+                    # Desenhar a bounding box e a distância no quadro
                     cv2.rectangle(frame, (x1, y1), (x2, y2), (0, 255, 0), 2)
-                    cv2.putText(frame, label, (x1, y1 - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 2)
+                    cv2.putText(frame, label_with_conf, (x1, y1 - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 2)
 
+            # Exibir a lista de objetos detectados em tempo real a cada 10 segundos
             current_time = time.time()
             if current_time - self.start_time >= 10:
-                print(f'Real time objects: {self.real_time_objects}')
-                self.start_time = time.time()
+                print(f"Objetos em tempo real: {self.real_time_objects}")
+                self.real_time_objects = []  # Reiniciar a lista de objetos
+                self.start_time = current_time
 
+            # Mostrar a saída
             cv2.imshow("YOLOv11 - Webcam", frame)
 
             if cv2.waitKey(1) & 0xFF == ord('q'):
